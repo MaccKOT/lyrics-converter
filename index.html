@@ -1,304 +1,307 @@
 <!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Text Converter for AI</title>
-        <style>
-            body {
-                font-family:
-                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                    Oxygen, Ubuntu, Cantarell, sans-serif;
-                max-width: 800px;
-                margin: 20px auto;
-                padding: 20px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-            }
-            .container {
-                background: white;
-                padding: 30px;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            }
-            h1 {
-                text-align: center;
-                color: #333;
-                margin-bottom: 30px;
-            }
-            label {
-                display: block;
-                margin: 15px 0 8px 0;
-                font-weight: 600;
-                color: #555;
-            }
-            textarea {
-                width: 100%;
-                height: 200px;
-                margin: 8px 0;
-                padding: 15px;
-                border: 2px solid #e1e5e9;
-                border-radius: 8px;
-                font-family: "Consolas", "Monaco", "Courier New", monospace;
-                font-size: 14px;
-                line-height: 1.5;
-                resize: vertical;
-                transition: border-color 0.3s ease;
-                box-sizing: border-box;
-            }
-            textarea:focus {
-                outline: none;
-                border-color: #667eea;
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            }
-            .button-group {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin: 20px 0;
-                align-items: center;
-            }
-            button {
-                background: #667eea;
-                color: white;
-                padding: 12px 24px;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 15px;
-                font-weight: 500;
-                transition: all 0.2s ease;
-            }
-            button:hover {
-                background: #5a6fd8;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            }
-            button:active {
-                transform: translateY(0);
-            }
-            .clear-btn {
-                background: #f8f9fa;
-                color: #666;
-                border: 1px solid #ddd;
-            }
-            .clear-btn:hover {
-                background: #e9ecef;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-            .copy-btn {
-                margin-top: 10px;
-                background: #28a745;
-            }
-            .copy-btn:hover {
-                background: #218838;
-            }
-            .lang-switch {
-                background: #ffc107;
-                color: #212529;
-                margin-left: auto;
-            }
-            .lang-switch:hover {
-                background: #e0a800;
-            }
-            .result-container {
-                margin: 20px 0;
-            }
-            .result {
-                background: #f8f9fa;
-                padding: 20px;
-                border-radius: 8px;
-                border: 1px solid #e9ecef;
-                word-wrap: break-word;
-                font-family: "Consolas", "Monaco", "Courier New", monospace;
-                font-size: 13px;
-                line-height: 1.6;
-                min-height: 60px;
-                white-space: pre-wrap;
-            }
-            .hidden {
-                display: none;
-            }
-            .shortcut-hint {
-                font-size: 13px;
-                color: #666;
-                margin-top: 5px;
-                font-style: italic;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1 data-i18n="title">Конвертер текста для нейросети</h1>
 
-            <label for="inputText" data-i18n="inputLabel"
-                >Введите текст песни:</label
-            >
-            <textarea
-                id="inputText"
-                placeholder="Вставьте сюда текст песни с переносами строк..."
-                data-i18n-placeholder="inputPlaceholder"
-            ></textarea>
-            <div class="shortcut-hint" data-i18n="shortcutHint">
-                Совет: Нажмите Ctrl+Enter для быстрого преобразования
-            </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="icon.png">
+    <title>Text Converter for AI</title>
+    <style>
+        body {
+            font-family:
+                -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
 
-            <div class="button-group">
-                <button onclick="convertToSingleLine()" data-i18n="convertBtn">
-                    Преобразовать в одну строку
-                </button>
-                <button
-                    class="clear-btn"
-                    onclick="clearAll()"
-                    data-i18n="clearBtn"
-                >
-                    Очистить всё
-                </button>
-                <button
-                    class="lang-switch"
-                    onclick="switchLanguage()"
-                    data-i18n="langBtn"
-                >
-                    English
-                </button>
-            </div>
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
 
-            <div class="result-container">
-                <label for="outputText" data-i18n="resultLabel"
-                    >Результат:</label
-                >
-                <div id="outputText" class="result"></div>
-                <button
-                    id="copyBtn"
-                    class="copy-btn hidden"
-                    onclick="copyResult()"
-                    data-i18n="copyBtn"
-                >
-                    Копировать результат
-                </button>
-            </div>
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 8px 0;
+            font-weight: 600;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin: 8px 0;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .clear-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .clear-btn:hover {
+            background: #e9ecef;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            background: #28a745;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .lang-switch {
+            background: #ffc107;
+            color: #212529;
+            margin-left: auto;
+        }
+
+        .lang-switch:hover {
+            background: #e0a800;
+        }
+
+        .result-container {
+            margin: 20px 0;
+        }
+
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            word-wrap: break-word;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            min-height: 60px;
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .shortcut-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 data-i18n="title">Конвертер текста для нейросети</h1>
+
+        <label for="inputText" data-i18n="inputLabel">Введите текст песни:</label>
+        <textarea id="inputText" placeholder="Вставьте сюда текст песни с переносами строк..."
+            data-i18n-placeholder="inputPlaceholder"></textarea>
+        <div class="shortcut-hint" data-i18n="shortcutHint">
+            Совет: Нажмите Ctrl+Enter для быстрого преобразования
         </div>
 
-        <script>
-            // Словари переводов
-            const translations = {
-                ru: {
-                    title: "Конвертер текста для нейросети",
-                    inputLabel: "Введите текст песни:",
-                    inputPlaceholder:
-                        "Вставьте сюда текст песни с переносами строк...",
-                    shortcutHint:
-                        "Совет: Нажмите Ctrl+Enter для быстрого преобразования",
-                    convertBtn: "Преобразовать в одну строку",
-                    clearBtn: "Очистить всё",
-                    langBtn: "English",
-                    resultLabel: "Результат:",
-                    copyBtn: "Копировать результат",
-                    copied: "✓ Скопировано!",
-                },
-                en: {
-                    title: "Text Converter for AI",
-                    inputLabel: "Enter song lyrics:",
-                    inputPlaceholder: "Paste lyrics with line breaks here...",
-                    shortcutHint: "Tip: Press Ctrl+Enter for quick conversion",
-                    convertBtn: "Convert to single line",
-                    clearBtn: "Clear all",
-                    langBtn: "Русский",
-                    resultLabel: "Result:",
-                    copyBtn: "Copy result",
-                    copied: "✓ Copied!",
-                },
-            };
+        <div class="button-group">
+            <button onclick="convertToSingleLine()" data-i18n="convertBtn">
+                Преобразовать в одну строку
+            </button>
+            <button class="clear-btn" onclick="clearAll()" data-i18n="clearBtn">
+                Очистить всё
+            </button>
+            <button class="lang-switch" onclick="switchLanguage()" data-i18n="langBtn">
+                English
+            </button>
+        </div>
 
-            // Текущий язык (по умолчанию русский)
-            let currentLang = "ru";
+        <div class="result-container">
+            <label for="outputText" data-i18n="resultLabel">Результат:</label>
+            <div id="outputText" class="result"></div>
+            <button id="copyBtn" class="copy-btn hidden" onclick="copyResult()" data-i18n="copyBtn">
+                Копировать результат
+            </button>
+        </div>
+    </div>
 
-            // Функция переключения языка
-            function switchLanguage() {
-                currentLang = currentLang === "ru" ? "en" : "ru";
-                updateLanguage();
-            }
+    <script>
+        // Словари переводов
+        const translations = {
+            ru: {
+                title: "Конвертер текста для нейросети",
+                inputLabel: "Введите текст песни:",
+                inputPlaceholder:
+                    "Вставьте сюда текст песни с переносами строк...",
+                shortcutHint:
+                    "Совет: Нажмите Ctrl+Enter для быстрого преобразования",
+                convertBtn: "Преобразовать в одну строку",
+                clearBtn: "Очистить всё",
+                langBtn: "English",
+                resultLabel: "Результат:",
+                copyBtn: "Копировать результат",
+                copied: "✓ Скопировано!",
+            },
+            en: {
+                title: "Text Converter for AI",
+                inputLabel: "Enter song lyrics:",
+                inputPlaceholder: "Paste lyrics with line breaks here...",
+                shortcutHint: "Tip: Press Ctrl+Enter for quick conversion",
+                convertBtn: "Convert to single line",
+                clearBtn: "Clear all",
+                langBtn: "Русский",
+                resultLabel: "Result:",
+                copyBtn: "Copy result",
+                copied: "✓ Copied!",
+            },
+        };
 
-            // Обновление текстов на странице
-            function updateLanguage() {
-                const lang = translations[currentLang];
+        // Текущий язык (по умолчанию русский)
+        let currentLang = "ru";
 
-                // Обновляем элементы с атрибутом data-i18n
-                document.querySelectorAll("[data-i18n]").forEach((element) => {
-                    const key = element.getAttribute("data-i18n");
-                    if (lang[key]) {
-                        element.textContent = lang[key];
-                    }
-                });
-
-                // Обновляем placeholder'ы
-                document
-                    .querySelectorAll("[data-i18n-placeholder]")
-                    .forEach((element) => {
-                        const key = element.getAttribute(
-                            "data-i18n-placeholder",
-                        );
-                        if (lang[key]) {
-                            element.placeholder = lang[key];
-                        }
-                    });
-
-                // Обновляем заголовок страницы
-                document.title =
-                    currentLang === "ru"
-                        ? "Конвертер текста для нейросети"
-                        : "Text Converter for AI";
-            }
-
-            // Основные функции
-            function convertToSingleLine() {
-                const input = document.getElementById("inputText").value;
-                const outputDiv = document.getElementById("outputText");
-                const copyBtn = document.getElementById("copyBtn");
-
-                let result = input
-                    .replace(/\n/g, " ")
-                    .replace(/\r/g, " ")
-                    .replace(/\t/g, " ")
-                    .replace(/\s+/g, " ")
-                    .trim();
-
-                outputDiv.textContent = result;
-                copyBtn.classList.remove("hidden");
-            }
-
-            function copyResult() {
-                const result =
-                    document.getElementById("outputText").textContent;
-                navigator.clipboard.writeText(result).then(() => {
-                    const btn = document.getElementById("copyBtn");
-                    const originalText = btn.textContent;
-                    const lang = translations[currentLang];
-                    btn.textContent = lang.copied || "✓ Copied!";
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                    }, 1500);
-                });
-            }
-
-            function clearAll() {
-                document.getElementById("inputText").value = "";
-                document.getElementById("outputText").textContent = "";
-                document.getElementById("copyBtn").classList.add("hidden");
-            }
-
-            // Поддержка Ctrl+Enter
-            document
-                .getElementById("inputText")
-                .addEventListener("keydown", function (e) {
-                    if (e.ctrlKey && e.key === "Enter") {
-                        convertToSingleLine();
-                        e.preventDefault();
-                    }
-                });
-
-            // Инициализация
+        // Функция переключения языка
+        function switchLanguage() {
+            currentLang = currentLang === "ru" ? "en" : "ru";
             updateLanguage();
-        </script>
-    </body>
+        }
+
+        // Обновление текстов на странице
+        function updateLanguage() {
+            const lang = translations[currentLang];
+
+            // Обновляем элементы с атрибутом data-i18n
+            document.querySelectorAll("[data-i18n]").forEach((element) => {
+                const key = element.getAttribute("data-i18n");
+                if (lang[key]) {
+                    element.textContent = lang[key];
+                }
+            });
+
+            // Обновляем placeholder'ы
+            document
+                .querySelectorAll("[data-i18n-placeholder]")
+                .forEach((element) => {
+                    const key = element.getAttribute(
+                        "data-i18n-placeholder",
+                    );
+                    if (lang[key]) {
+                        element.placeholder = lang[key];
+                    }
+                });
+
+            // Обновляем заголовок страницы
+            document.title =
+                currentLang === "ru"
+                    ? "Конвертер текста для нейросети"
+                    : "Text Converter for AI";
+        }
+
+        // Основные функции
+        function convertToSingleLine() {
+            const input = document.getElementById("inputText").value;
+            const outputDiv = document.getElementById("outputText");
+            const copyBtn = document.getElementById("copyBtn");
+
+            let result = input
+                .replace(/\n/g, " ")
+                .replace(/\r/g, " ")
+                .replace(/\t/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            outputDiv.textContent = result;
+            copyBtn.classList.remove("hidden");
+        }
+
+        function copyResult() {
+            const result =
+                document.getElementById("outputText").textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                const btn = document.getElementById("copyBtn");
+                const originalText = btn.textContent;
+                const lang = translations[currentLang];
+                btn.textContent = lang.copied || "✓ Copied!";
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1500);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById("inputText").value = "";
+            document.getElementById("outputText").textContent = "";
+            document.getElementById("copyBtn").classList.add("hidden");
+        }
+
+        // Поддержка Ctrl+Enter
+        document
+            .getElementById("inputText")
+            .addEventListener("keydown", function (e) {
+                if (e.ctrlKey && e.key === "Enter") {
+                    convertToSingleLine();
+                    e.preventDefault();
+                }
+            });
+
+        // Инициализация
+        updateLanguage();
+    </script>
+</body>
+
 </html>
